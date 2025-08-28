@@ -2,7 +2,7 @@ const express = require("express");
 const puppeteer = require("puppeteer");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // use Render-assigned port
 
 // Parse JSON body
 app.use(express.json({ limit: "10mb" }));
@@ -19,9 +19,10 @@ app.post("/html-to-pdf", async (req, res) => {
   if (!html) return res.status(400).send("Missing HTML");
 
   try {
+    // Launch Puppeteer with Render-friendly flags
     const browser = await puppeteer.launch({
-      headless: true, // simpler for local testing
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
     });
 
     const page = await browser.newPage();
@@ -43,5 +44,6 @@ app.post("/html-to-pdf", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Puppeteer PDF service running at http://localhost:${PORT}`);
+  console.log(`✅ Puppeteer PDF service running on port ${PORT}`);
 });
+
