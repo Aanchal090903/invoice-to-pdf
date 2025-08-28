@@ -1,28 +1,23 @@
-// server.js
 const express = require("express");
 const puppeteer = require("puppeteer");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware to parse JSON bodies
+// Middleware to parse JSON
 app.use(express.json({ limit: "10mb" }));
 
-// Root test route
+// Root route
 app.get("/", (req, res) => {
   res.send("✅ Puppeteer PDF server running");
 });
 
-// PDF generation route
+// PDF route
 app.post("/html-to-pdf", async (req, res) => {
   const { html } = req.body;
-
-  if (!html) {
-    return res.status(400).send("Missing HTML content in request body");
-  }
+  if (!html) return res.status(400).send("Missing HTML");
 
   try {
-    // Launch Puppeteer with Render-friendly flags
     const browser = await puppeteer.launch({
       headless: true,
       args: [
@@ -37,12 +32,12 @@ app.post("/html-to-pdf", async (req, res) => {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle0" });
 
-    // Generate PDF
-    const pdfBuffer = await page.pdf({ format: "A4" });
+    // Optional: take a screenshot for debugging
+    // await page.screenshot({ path: "debug.png" });
 
+    const pdfBuffer = await page.pdf({ format: "A4" });
     await browser.close();
 
-    // Send PDF as response
     res.set({
       "Content-Type": "application/pdf",
       "Content-Disposition": 'attachment; filename="invoice.pdf"',
@@ -54,7 +49,6 @@ app.post("/html-to-pdf", async (req, res) => {
   }
 });
 
-// Start server
 app.listen(PORT, () => {
   console.log(`✅ Puppeteer PDF service running on port ${PORT}`);
 });
