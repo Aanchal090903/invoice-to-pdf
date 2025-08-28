@@ -1,0 +1,19 @@
+{
+  "name": "pupeteer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "node": "^24.6.0",
+    "puppeteer": "^24.15.0",
+    "react": "^19.1.1"
+  }
+}
