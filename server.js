@@ -1,8 +1,11 @@
 const express = require("express");
 const puppeteer = require("puppeteer");
+const cors = require("cors"); // import cors
+
 
 const app = express();
 const PORT = 3000;
+app.use(cors());
 
 // Parse JSON body
 app.use(express.json({ limit: "10mb" }));
