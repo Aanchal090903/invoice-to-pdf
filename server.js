@@ -2,40 +2,33 @@ const express = require("express");
 const puppeteer = require("puppeteer");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
-// Middleware to parse JSON
+// Parse JSON body
 app.use(express.json({ limit: "10mb" }));
 
-// Root route
+// Test route
 app.get("/", (req, res) => {
   res.send("✅ Puppeteer PDF server running");
 });
 
-// PDF route
+// PDF generation route
 app.post("/html-to-pdf", async (req, res) => {
   const { html } = req.body;
+
   if (!html) return res.status(400).send("Missing HTML");
 
   try {
     const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--single-process",
-      ],
+      headless: true, // simpler for local testing
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle0" });
 
-    // Optional: take a screenshot for debugging
-    // await page.screenshot({ path: "debug.png" });
-
     const pdfBuffer = await page.pdf({ format: "A4" });
+
     await browser.close();
 
     res.set({
@@ -44,11 +37,11 @@ app.post("/html-to-pdf", async (req, res) => {
     });
     res.send(pdfBuffer);
   } catch (err) {
-    console.error("❌ PDF generation failed:", err.stack || err);
+    console.error("❌ PDF generation failed:", err);
     res.status(500).send("PDF generation failed");
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Puppeteer PDF service running on port ${PORT}`);
+  console.log(`✅ Puppeteer PDF service running at http://localhost:${PORT}`);
 });
