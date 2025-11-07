@@ -4,5 +4,5 @@ npm i
 npm install puppeteer
 
 
-node serve.js
+node server.js
 
